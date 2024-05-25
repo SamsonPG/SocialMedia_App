@@ -40,10 +40,10 @@ const UserHeader = () => {
           <Flex gap={2} alignItems={"center"}>
             <Text fontSize={"sm"}>markzukerberg</Text>
             <Text
-              fontSize={"xl"}
+              fontSize={{base:"xs",md:"sm",lg:"md"}}
               bg={"gray.dark"}
               color={"gray.light"}
-              px={3}
+              px={3} py={1}
               borderRadius={"full"}
             >
               threads.net

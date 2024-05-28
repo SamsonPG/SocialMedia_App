@@ -2,6 +2,7 @@ import { Avatar, Box, Button, Divider, Flex, Image, Text } from "@chakra-ui/reac
 import { BsThreeDots } from "react-icons/bs";
 import Actions from "../components/Actions";
 import { useState } from "react";
+import Comment from "../components/Comment";
 
 const PostPage = () => {
   const [liked,setLiked] = useState()
@@ -43,11 +44,19 @@ const PostPage = () => {
           <Flex justifyContent={"space-between"}>
             <Flex gap={2} alignItems={"center"}>
               <Text fontSize={"2xl"}> 👋 </Text>
-              <Text color={"gray.light"}>Get the app to like, replay and post.</Text>
+              <Text color={"gray.light"}>Get the app to like, replay, post and more</Text>
             </Flex>
             <Button>Get</Button>
           </Flex>
           <Divider my={4}/>
+          <Comment 
+          comment="looks really good 🎪"
+          createdAt="2d"
+          likes={200}
+          username="jondoe"
+          userAvatar='https://bit.ly/dan-abramov'
+          />
+         
     </>
   );
 };

@@ -83,8 +83,15 @@ try {
 
 //Logout User
 
-const logoutUser = async( req,res)=>{
-
+const logoutUser = ( req,res)=>{
+try {
+  res.cookie("jwt-socialApp", "",{maxAge:1})
+  res.status(200).json({message: "User Logged out successfully"})
+  
+} catch (error) {
+  res.status(500).json({message: error.message})
+  console.log("Error in LogoutUser: ", error.message);
+}
 }
 
 export { signupUser,loginUser, logoutUser };

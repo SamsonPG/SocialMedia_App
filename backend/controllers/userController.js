@@ -110,12 +110,13 @@ const followUnfollowUser = async (req, res) => {
       // Modify current user following, modify followers of userToModify
       await User.findByIdAndUpdate(req.user._id,{$pull:{following: id}});
       await User.findByIdAndUpdate(id,{$pull:{followers: req.user._id}});
-
+      res.status(200).json({ message: "User Unfollowed successfully" });
     } else {
       //Follow user
       // Modify current user following, modify followers of userToModify
       await User.findByIdAndUpdate(req.user._id,{$push:{following: id}});
       await User.findByIdAndUpdate(id,{$push:{followers: req.user._id}});
+   res.status(200).json({message:"User Followed successfully"})
     }
   } catch (error) {
     res.status(500).json({ message: error.message });

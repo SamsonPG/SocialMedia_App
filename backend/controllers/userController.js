@@ -2,6 +2,23 @@ import User from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import generateTokenandSetCookie from "../utils/helpers/generateTokenandSetCookie.js";
 
+
+//getUserProfile
+
+const getUserProfile = async(req,res)=>{
+  const {username} = req.params
+  try {
+    const user = await User.findOne({username}).select("-password").select("-updatedAt")
+  if(!user)
+    return res.status(400).json({message: "User not found"})
+
+  res.status(200).json(user);
+  } catch (error) {
+    res.status(500).json({ message: error.message });
+    console.log("Error in getUserProfile: ", error.message);
+  }
+}
+
 //Signup User
 
 const signupUser = async (req, res) => {
@@ -89,6 +106,8 @@ const logoutUser = (req, res) => {
   }
 };
 
+//followUnfollowUser
+
 const followUnfollowUser = async (req, res) => {
   try {
     const { id } = req.params;
@@ -124,6 +143,9 @@ const followUnfollowUser = async (req, res) => {
   }
 };
 
+
+//updateUser
+
 const updateUser = async (req, res) => {
   const { name, email, username, password, profilePic, bio } = req.body;
   const userId = req.user._id;
@@ -157,4 +179,5 @@ const updateUser = async (req, res) => {
   }
 };
 
-export { signupUser, loginUser, logoutUser, followUnfollowUser, updateUser };
+
+export { getUserProfile, signupUser, loginUser, logoutUser, followUnfollowUser, updateUser,  };

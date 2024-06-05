@@ -24,6 +24,33 @@ import authScreenAtom from '../atoms/authAtom';
     const [showPassword, setShowPassword] = useState(false);
   
     const setAuthScreen = useSetRecoilState(authScreenAtom)
+    const [inputs,setInputs] = useState({
+       name:"",
+       email:"",
+       username:"",
+       password:"",
+      // confirmPassword:""
+    })
+
+    const handleSignUp = async()=>{
+
+      try {
+        const res= await fetch("/api/users/signup",{
+          method:"POST",
+          headers:{
+            "Content-Type":"application/json"
+          },
+          body:JSON.stringify(inputs)
+        })
+        
+        const data = await res.json()
+        console.log(data);
+
+      } catch (error) {
+        console.log(error);
+        
+      }
+    }
  
     return (
         <Flex
@@ -49,24 +76,32 @@ import authScreenAtom from '../atoms/authAtom';
                   <Box>
                     <FormControl  isRequired>
                       <FormLabel>Full Name</FormLabel>
-                      <Input type="text" />
+                      <Input type="text" 
+                      onChange={(e)=> setInputs({...inputs, name: e.target.value})}
+                      value={inputs.name}/>
                     </FormControl>
                   </Box>
                   <Box>
                     <FormControl isRequired>
                       <FormLabel>User Name</FormLabel>
-                      <Input type="text" />
+                      <Input type="text" 
+                      onChange={(e)=> setInputs({...inputs, username: e.target.value})}
+                      value={inputs.username}/>
                     </FormControl>
                   </Box>
                 </HStack>
                 <FormControl  isRequired>
                   <FormLabel>Email address</FormLabel>
-                  <Input type="email" />
+                  <Input type="email" 
+                  onChange={(e)=> setInputs({...inputs, email: e.target.value})}
+                  value={inputs.email}/>
                 </FormControl>
                 <FormControl isRequired>
                   <FormLabel>Password</FormLabel>
                   <InputGroup>
-                    <Input type={showPassword ? 'text' : 'password'} />
+                    <Input type={showPassword ? 'text' : 'password'}
+                    onChange={(e)=> setInputs({...inputs, password: e.target.value})}
+                    value={inputs.password} />
                     <InputRightElement h={'full'}>
                       <Button
                         variant={'ghost'}
@@ -86,7 +121,8 @@ import authScreenAtom from '../atoms/authAtom';
                     color={'white'}
                     _hover={{
                       bg: useColorModeValue("gray.700","gray.800"),
-                    }}>
+                    }}
+                    onClick={handleSignUp}>
                     Sign up
                   </Button>
                 </Stack>

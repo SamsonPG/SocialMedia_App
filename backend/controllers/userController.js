@@ -30,6 +30,11 @@ const signupUser = async (req, res) => {
   try {
     const { name, email, username, password } = req.body;
 
+       // Validate the request body
+       if (!name || !email || !username || !password) {
+        return res.status(400).json({ error: 'All fields are required' });
+      }
+
     // Check if the user already exists
     const user = await User.findOne({ $or: [{ email }, { username }] });
     if (user) {

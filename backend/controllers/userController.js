@@ -2,6 +2,7 @@ import User from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
 import generateTokenandSetCookie from "../utils/helpers/generateTokenandSetCookie.js";
+import {v2 as cloudinary} from "cloudinary"
 
 //getUserProfile
 
@@ -168,7 +169,9 @@ const followUnfollowUser = async (req, res) => {
 //updateUser
 
 const updateUser = async (req, res) => {
-  const { name, email, username, password, profilePic, bio } = req.body;
+  const { name, email, username, password,  bio } = req.body;
+  let {profilePic} = req.body;
+
   const userId = req.user._id;
   try {
     // Validate the post ID
@@ -189,6 +192,35 @@ const updateUser = async (req, res) => {
       const hashedPassword = await bcrypt.hash(password, salt);
       user.password = hashedPassword;
     }
+
+    // if(profilePic){
+    //   if(user.profilePic){
+    //     await cloudinary.uploader.destroy(user.profilePic.split("/").pop().split(".")[0])
+    //   }
+    //   const uploadedResponse = await cloudinary.uploader.upload(profilePic, {
+    //     upload_preset: "socialApp",
+    //   });
+    //   profilePic = uploadResponse.secure_url;
+      
+    // }
+
+    if (profilePic) {
+      // Check if the user already has a profile picture
+      if (user.profilePic) {
+        // Extract the public ID from the URL and destroy the old picture
+        const publicId = user.profilePic.split('/').pop().split('.')[0];
+        await cloudinary.uploader.destroy(publicId);
+      }
+    
+      // Upload the new profile picture
+      const uploadResponse = await cloudinary.uploader.upload(profilePic, {
+        upload_preset: 'social_app',
+      });
+    
+      // Update the profilePic variable with the URL of the uploaded image
+      profilePic = uploadResponse.secure_url;
+    }
+    
 
     user.name = name || user.name;
     user.email = email || user.email;

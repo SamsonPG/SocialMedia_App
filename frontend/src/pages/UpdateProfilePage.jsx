@@ -11,8 +11,23 @@ import {
   Center,
   Textarea,
 } from "@chakra-ui/react";
+import { useRecoilState } from "recoil";
+import userAtom from "../atoms/userAtom";
+import { useState } from "react";
 
 export default function UpdateProfilePage() {
+
+    const [user,setUser] = useRecoilState(userAtom)
+    const [inputs,setInputs] = useState({
+        name: user.name,
+        email: user.email,
+        username: user.username,
+        bio: user.bio,
+        password: "",
+      });
+ 
+
+
   return (
     <Flex align={"center"} justify={"center"} my={6}>
       <Stack
@@ -30,16 +45,19 @@ export default function UpdateProfilePage() {
         <FormControl id="userName">
           <Stack direction={["column", "row"]} spacing={6}>
             <Center>
-              <Avatar size="xl" src="https://bit.ly/sage-adebayo" />
+              <Avatar size="xl" boxShadow={"md"} src={user.profilepic} />
             </Center>
             <Center w="full">
               <Button w="full">Change Avatar</Button>
+              <Input type='file'/>
             </Center>
           </Stack>
         </FormControl>
         <FormControl isRequired>
           <FormLabel>Full name</FormLabel>
           <Input
+          value={inputs.name}
+          onChange={(e) => setInputs({...inputs, name : e.target.value})}
             placeholder="Samson P"
             _placeholder={{ color: "gray.500" }}
             type="text"
@@ -48,6 +66,8 @@ export default function UpdateProfilePage() {
         <FormControl isRequired>
           <FormLabel>User name</FormLabel>
           <Input
+          value={inputs.username}
+          onChange={(e) => setInputs({...inputs, username : e.target.value})}
             placeholder="samsonp"
             _placeholder={{ color: "gray.500" }}
             type="text"
@@ -59,6 +79,8 @@ export default function UpdateProfilePage() {
             placeholder="your-email@example.com"
             _placeholder={{ color: "gray.500" }}
             type="email"
+            value={inputs.email}
+          onChange={(e) => setInputs({...inputs, email : e.target.value})}
           />
         </FormControl>
         <FormControl isRequired>
@@ -67,6 +89,8 @@ export default function UpdateProfilePage() {
             placeholder="password"
             _placeholder={{ color: "gray.500" }}
             type="password"
+            value={inputs.password}
+          onChange={(e) => setInputs({...inputs, password : e.target.value})}
           />
         </FormControl>
         <FormControl isRequired>
@@ -78,6 +102,8 @@ export default function UpdateProfilePage() {
             type="text"
             height="100px" // Sets a default height,
             maxLength={500} // Sets maximum character length
+            value={inputs.bio}
+          onChange={(e) => setInputs({...inputs, bio : e.target.value})}
           />
         </FormControl>
         <Stack spacing={6} direction={["column", "row"]}>

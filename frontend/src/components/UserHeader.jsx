@@ -47,7 +47,7 @@ const UserHeader = ({user}) => {
               px={3} py={1}
               borderRadius={"full"}
             >
-              threads.net
+              socialApp.net
             </Text>
           </Flex>
         </Box>

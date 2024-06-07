@@ -9,10 +9,7 @@ import {v2 as cloudinary} from "cloudinary"
 const getUserProfile = async (req, res) => {
   const { username } = req.params;
   try {
-    // Validate the post ID
-    if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      return res.status(404).json({ error: "User not found" });
-    } 
+ 
     const user = await User.findOne({ username })
       .select("-password")
       .select("-updatedAt");

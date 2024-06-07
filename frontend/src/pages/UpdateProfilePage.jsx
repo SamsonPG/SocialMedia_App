@@ -16,6 +16,7 @@ import userAtom from "../atoms/userAtom";
 import { useRef, useState } from "react";
 import usePreviewImage from "../hooks/usePreviewImage";
 import useShowToast from "../hooks/useShowToast";
+import { useNavigate } from 'react-router-dom';
 
 export default function UpdateProfilePage() {
   const [user, setUser] = useRecoilState(userAtom);
@@ -30,9 +31,12 @@ export default function UpdateProfilePage() {
   const fileRef = useRef(null);
   const showToast = useShowToast();
   const { handleImageChange, imgUrl } = usePreviewImage();
+const [updating,setUpdating]=useState(false)
   
   const handleSubmit = async (e) => {
     e.preventDefault();
+    if(updating) return
+    setUpdating(true)
     try {
         const res = await fetch(`/api/users/update/${user._id}`, {
           method: "PUT",
@@ -54,7 +58,15 @@ export default function UpdateProfilePage() {
   
     } catch (error) {
       showToast("Error", error, "error");
+    }finally{
+      setUpdating(false)
     }
+  };
+
+  const navigate = useNavigate();
+
+  const handleCancelClick = () => {
+    navigate(-1); // Navigate back one step
   };
 
   return (
@@ -160,6 +172,7 @@ export default function UpdateProfilePage() {
               _hover={{
                 bg: "red.500",
               }}
+              onClick={handleCancelClick}
             >
               Cancel
             </Button>
@@ -171,6 +184,7 @@ export default function UpdateProfilePage() {
                 bg: "green.500",
               }}
               type="submit"
+              isLoading={updating}
             >
               Submit
             </Button>
@@ -181,4 +195,4 @@ export default function UpdateProfilePage() {
   );
 }
 
-//export default UpdateProfilePage
+

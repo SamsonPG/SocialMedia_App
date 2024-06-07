@@ -164,14 +164,14 @@ const followUnfollowUser = async (req, res) => {
 //updateUser
 
 const updateUser = async (req, res) => {
-  const { name, email, username, password,  bio } = req.body;
+  const { name, email, username, password, bio } = req.body;
   let {profilePic} = req.body;
 
   const userId = req.user._id;
   try {
     // Validate the post ID
     if (!mongoose.Types.ObjectId.isValid(req.params.id)) {
-      return res.status(404).json({ error: "Usert not found" });
+      return res.status(404).json({ error: "User not found" });
     }
 
     let user = await User.findById(userId);
@@ -187,17 +187,6 @@ const updateUser = async (req, res) => {
       const hashedPassword = await bcrypt.hash(password, salt);
       user.password = hashedPassword;
     }
-
-    // if(profilePic){
-    //   if(user.profilePic){
-    //     await cloudinary.uploader.destroy(user.profilePic.split("/").pop().split(".")[0])
-    //   }
-    //   const uploadedResponse = await cloudinary.uploader.upload(profilePic, {
-    //     upload_preset: "socialApp",
-    //   });
-    //   profilePic = uploadResponse.secure_url;
-      
-    // }
 
     if (profilePic) {
       // Check if the user already has a profile picture
@@ -228,7 +217,7 @@ const updateUser = async (req, res) => {
     //password should be null in response
     user.password = null
 
-    res.status(200).json(  user );
+    res.status(200).json(user);
   } catch (error) {
     res.status(500).json({ error: error.message });
     console.log("Error in updateUser: ", error.message);

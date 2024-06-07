@@ -15,7 +15,8 @@ import {
 import { BsInstagram } from "react-icons/bs";
 import { CgMoreO } from "react-icons/cg";
 
-const UserHeader = () => {
+const UserHeader = ({user}) => {
+  console.log(user);
   const toast = useToast();
 
   const copyURL = () => {
@@ -35,10 +36,10 @@ const UserHeader = () => {
       <Flex justifyContent={"space-between"} w={"full"}>
         <Box>
           <Text fontSize={"2xl"} fontWeight={"bold"}>
-            mark zuk
+            {user.name}
           </Text>
           <Flex gap={2} alignItems={"center"}>
-            <Text fontSize={"sm"}>markzukerberg</Text>
+            <Text fontSize={"sm"}>{user.username}</Text>
             <Text
               fontSize={{base:"xs",md:"sm",lg:"md"}}
               bg={"gray.dark"}
@@ -51,16 +52,24 @@ const UserHeader = () => {
           </Flex>
         </Box>
         <Box>
-          <Avatar name="mark zuk" src="/zuck-avatar.png" size={{
+     {user.profilePic &&
+          <Avatar name={user.name} src={user.profilePic} size={{
             base:"md",
             md:"xl"
           }}></Avatar>
+          }
+          {!user.profilePic &&
+          <Avatar name={user.name} src="https://bit.ly/broken-link" size={{
+            base:"md",
+            md:"xl"
+          }}></Avatar>
+          }
         </Box>
       </Flex>
-      <Text>Founder Bitch</Text>
+      <Text>{user.bio}</Text>
       <Flex w={"full"} justifyContent={"space-between"}>
         <Flex gap={2} alignItems={"center"}>
-          <Text color={"gray.light"}>4 Million Followers</Text>
+          <Text color={"gray.light"}>{user?.followers?.length || 0} Followers</Text>
           <Box w="1" h="1" bg={"gray.light"} borderRadius={"full"}></Box>
           <Link color={"gray.light"}>instagram.com</Link>
         </Flex>

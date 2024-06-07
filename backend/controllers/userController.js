@@ -67,8 +67,7 @@ const signupUser = async (req, res) => {
         username: newUser.username,
         bio: newUser.bio,
         profilePic: newUser.profilePic,
-        // followers: newUser.followers,
-        // following: newUser.following,
+      
       });
     } else {
       res.status(400).json({ error: "Invalid user data" });
@@ -104,8 +103,7 @@ const loginUser = async (req, res) => {
       username: user.username,
       bio: user.bio,
       profilePic: user.profilePic,
-      // followers: user.followers,
-      // following: user.following,
+     
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -213,12 +211,12 @@ const updateUser = async (req, res) => {
       }
     
       // Upload the new profile picture
-      const uploadResponse = await cloudinary.uploader.upload(profilePic, {
+      const uploadedResponse = await cloudinary.uploader.upload(profilePic, {
         upload_preset: 'social_app',
       });
     
       // Update the profilePic variable with the URL of the uploaded image
-      profilePic = uploadResponse.secure_url;
+      profilePic = uploadedResponse.secure_url;
     }
     
 
@@ -230,7 +228,10 @@ const updateUser = async (req, res) => {
 
     user = await user.save();
 
-    res.status(200).json({ message: "Profile updated successfully", user });
+    //password should be null in response
+    user.password = null
+
+    res.status(200).json(  user );
   } catch (error) {
     res.status(500).json({ error: error.message });
     console.log("Error in updateUser: ", error.message);

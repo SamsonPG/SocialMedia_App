@@ -15,7 +15,6 @@ import { useRecoilState } from "recoil";
 import userAtom from "../atoms/userAtom";
 import { useRef, useState } from "react";
 import usePreviewImage from "../hooks/usePreviewImage";
-import { Form } from "react-router-dom";
 import useShowToast from "../hooks/useShowToast";
 
 export default function UpdateProfilePage() {
@@ -27,9 +26,11 @@ export default function UpdateProfilePage() {
     bio: user.bio,
     password: "",
   });
+  console.log(user);
   const fileRef = useRef(null);
-  const { handleImageChange, imgUrl } = usePreviewImage();
   const showToast = useShowToast();
+  const { handleImageChange, imgUrl } = usePreviewImage();
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -40,17 +41,16 @@ export default function UpdateProfilePage() {
           },
           body: JSON.stringify({...inputs, profilePic: imgUrl}),
         });
-        const data = await res.json();
-        if (data.error) return showToast("Error", data.error, "error");
-        setUser(data);
+        const data = await res.json(); //updated user object
+        if (data.error) {
+          showToast("Error", data.error, "error");
+          return;
+        }
+       
         showToast("Success", "Profile Updated", "success");
-        setInputs({
-          name: user.name,
-          email: user.email,
-          username: user.username,
-          bio: user.bio,
-          password: "",
-        });
+        setUser(data);
+        localStorage.setItem("user-socialApp", JSON.stringify(data))
+ 
   
     } catch (error) {
       showToast("Error", error, "error");
@@ -78,7 +78,7 @@ export default function UpdateProfilePage() {
                 <Avatar
                   size="xl"
                   boxShadow={"md"}
-                  src={imgUrl || user.profilepic}
+                  src={imgUrl || user.profilePic}
                 />
               </Center>
               <Center w="full">
@@ -133,6 +133,7 @@ export default function UpdateProfilePage() {
               _placeholder={{ color: "gray.500" }}
               type="password"
               value={inputs.password}
+              minLength={6}
               onChange={(e) =>
                 setInputs({ ...inputs, password: e.target.value })
               }

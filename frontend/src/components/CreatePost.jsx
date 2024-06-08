@@ -132,7 +132,6 @@ import {
   ModalOverlay,
   Text,
   Textarea,
-  textDecoration,
   useColorModeValue,
   useDisclosure,
 } from "@chakra-ui/react";
@@ -141,8 +140,10 @@ import usePreviewImage from "../hooks/usePreviewImage";
 import { BsFillImageFill } from "react-icons/bs";
 import userAtom from "../atoms/userAtom";
 import { useRecoilValue } from "recoil";
+import useShowToast from "../hooks/useShowToast";
 
 const CreatePost = () => {
+const showToast= useShowToast()
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [postText, setPostText] = useState("");
   const { handleImageChange, imgUrl, setImgUrl } = usePreviewImage();
@@ -173,8 +174,11 @@ const user = useRecoilValue(userAtom)
   })
   const data = await res.json()
   if(data.error){
-    
+    showToast("Error",data.error,"error")
+    return
   }
+  showToast("Success","Post created successfully","success")
+  onClose()
 };
   return (
     <>

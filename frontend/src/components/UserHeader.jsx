@@ -28,8 +28,9 @@ const UserHeader = ({ user }) => {
   const currentUser = useRecoilValue(userAtom); //logged in user
   const [updating, setUpdating] = useState(false);
   const [following, setFollowing] = useState(
-    user.followers.includes(currentUser._id)
+    user.followers && user.followers.includes(currentUser._id)
   );
+
   const handleFollowUnfollow = async () => {
     if (!currentUser) {
       showToast("Error", "Please login to follow", "error");
@@ -195,3 +196,4 @@ const UserHeader = ({ user }) => {
 };
 
 export default UserHeader;
+

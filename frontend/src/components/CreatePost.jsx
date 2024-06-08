@@ -143,14 +143,15 @@ import { useRecoilValue } from "recoil";
 import useShowToast from "../hooks/useShowToast";
 
 const CreatePost = () => {
-const showToast= useShowToast()
+  const showToast = useShowToast();
   const { isOpen, onOpen, onClose } = useDisclosure();
   const [postText, setPostText] = useState("");
   const { handleImageChange, imgUrl, setImgUrl } = usePreviewImage();
-const user = useRecoilValue(userAtom)
+  const user = useRecoilValue(userAtom);
   const imageRef = useRef(null);
   const MAX_CHAR = 500;
   const [remainingChar, setRemainingChar] = useState(MAX_CHAR);
+const[loading,setLoading]= useState(false)
 
   const handleTextChange = (e) => {
     const inputText = e.target.value;
@@ -165,21 +166,49 @@ const user = useRecoilValue(userAtom)
   };
 
   const handleCreatePost = async () => {
-  const res= await fetch("/api/posts/create",{
+    setLoading(true)
+    // Ensure that either postText or imgUrl is provided
+    if (!postText && !imgUrl) {
+      showToast("Error", "Post must have either text or an image", "error");
+      return;
+    }
+
+    // Create the post data object
+    const postData = {
+      postedBy: user._id,
+      text: postText || "", // Default to an empty string if postText is null
+      img: imgUrl || "", // Default to an empty string if imgUrl is null
+    };
+
+    try {
+      const res = await fetch("/api/posts/create", {
         method: "POST",
         headers: {
-            "Content-Type": "application/json",
+          "Content-Type": "application/json",
         },
-        body: JSON.stringify({postedBy: user._id,text: postText, img: imgUrl})
-  })
-  const data = await res.json()
-  if(data.error){
-    showToast("Error",data.error,"error")
-    return
-  }
-  showToast("Success","Post created successfully","success")
-  onClose()
-};
+        body: JSON.stringify(postData),
+      });
+
+      const data = await res.json();
+
+      if (data.error) {
+        showToast("Error", data.error, "error");
+        return;
+      }
+
+      showToast("Success", "Post created successfully", "success");
+      onClose();
+      // Clear the inputs after creating a post
+      setPostText("");
+      setImgUrl("");
+    } catch (error) {
+     
+      showToast("Error", error, "error");
+    }finally{
+        setLoading(false)
+    }
+  };
+
   return (
     <>
       <Button
@@ -206,7 +235,7 @@ const user = useRecoilValue(userAtom)
                 value={postText}
               />
               <Text
-                fontsize={"xm"}
+                fontSize={"xm"}
                 fontWeight={"bold"}
                 textAlign={"right"}
                 m={"1"}
@@ -243,7 +272,7 @@ const user = useRecoilValue(userAtom)
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleCreatePost}>
+            <Button colorScheme="blue" mr={3} onClick={handleCreatePost} isLoading={loading}>
               Post
             </Button>
           </ModalFooter>

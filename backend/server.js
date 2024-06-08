@@ -26,7 +26,7 @@ app.use(bodyParser.urlencoded({ limit: '10mb', extended: true })); // Adjust the
 
 
 //Middlewares
-app.use(express.json()); // to parse json data in the req.body
+app.use(express.json({limit:"10mb"})); // to parse json data in the req.body
 app.use(express.urlencoded({extended: true})); //to parse form data in the req.body
 app.use(cookieParser()); //get the cookie
 

@@ -1,3 +1,4 @@
+
 import {
   VStack,
   Box,
@@ -196,4 +197,3 @@ const UserHeader = ({ user }) => {
 };
 
 export default UserHeader;
-

@@ -16,14 +16,14 @@ const Post = ({ post, postedBy }) => {
       try {
         const res = await fetch(`/api/users/profile/${postedBy}`);
         const data = await res.json();
-        setLiked(data.likes.includes(post._id));
+        console.log(data);
      
       } catch (error) {
         showToast("Error", error.message, "error");
       }
     };
     getUser();
-  }, [userId,showToast]);
+  }, [postedBy,showToast]);
 
   return (
     <Link to={"/markzukerburg/post/1"}>

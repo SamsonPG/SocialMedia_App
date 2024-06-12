@@ -15,7 +15,7 @@ const [loading,setLoading] = useState(true)
       setLoading(true)
       try {
         const res= await fetch("/api/posts/feed")
-        const data = res.json()
+        const data = await res.json()
         if(data.error){
           showToast("Error", data.error, "error");
           return;
@@ -38,10 +38,13 @@ const [loading,setLoading] = useState(true)
   <Flex justify={"center"}>
   <Spinner size="xl"/>
   </Flex>)}
-  {posts.map((post)=>{
+  {!loading && Array.isArray(posts) && posts.map((post) => (
+        <Post key={post._id} post={post} postedBy={post.postedBy} />
+      ))}
+  {/* {posts.map((post)=>{
     <Post key={post._id} post={post} postedBy={post.postedBy}/>
 
-  })}
+  })} */}
 </>
   )
 }

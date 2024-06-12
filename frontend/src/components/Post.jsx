@@ -2,10 +2,29 @@ import { Avatar, Box, Flex, Image, Text } from "@chakra-ui/react";
 import { BsThreeDots } from "react-icons/bs";
 import { Link } from "react-router-dom";
 import Actions from "./Actions";
-import { useState } from "react";
+import { useEffect, useState } from "react";
+import useShowToast from "../hooks/useShowToast";
 
-const Post = ({post,userId}) => {
+const Post = ({ post, postedBy }) => {
   const [liked, setLiked] = useState(false);
+
+
+  const showToast = useShowToast();
+  useEffect(() => {
+    const getUser = async () => {
+     
+      try {
+        const res = await fetch(`/api/users/profile/${postedBy}`);
+        const data = await res.json();
+        setLiked(data.likes.includes(post._id));
+     
+      } catch (error) {
+        showToast("Error", error.message, "error");
+      }
+    };
+    getUser();
+  }, [userId,showToast]);
+
   return (
     <Link to={"/markzukerburg/post/1"}>
       <Flex gap={3} mb={4} py={5}>
@@ -57,26 +76,28 @@ const Post = ({post,userId}) => {
               <BsThreeDots />
             </Flex>
           </Flex>
-          <Text fontSize={"sm"}>{postTitle}</Text>
-          {postImage &&  <Box
-            borderRadius={6}
-            overflow={"hidden"}
-            border={"1px solid "}
-            borderColor={"gray.light"}
-          >
-            <Image src={postImage} w={"full"} />
-          </Box> }
-         
+          <Text fontSize={"sm"}>{post.text}</Text>
+          {post.img && (
+            <Box
+              borderRadius={6}
+              overflow={"hidden"}
+              border={"1px solid "}
+              borderColor={"gray.light"}
+            >
+              <Image src={post.img} w={"full"} />
+            </Box>
+          )}
+
           <Flex gap={3} my={1}>
             <Actions liked={liked} setLiked={setLiked} />
           </Flex>
           <Flex gap={2} alignItems={"center"}>
             <Text color={"gray.light"} fontSize="sm">
-              {likes} likes
+              {post.likes.length} likes
             </Text>
             <Box w={0.5} h={0.5} borderRadius={"full"} bg={"gray.light"}></Box>
             <Text color={"gray.light"} fontSize="sm">
-              {replies} replies
+              {post.replies.length} replies
             </Text>
           </Flex>
         </Flex>

@@ -11,7 +11,7 @@ const HomePage = () => {
       try {
         
       } catch (error) {
-        showToast("Error", error, "error");
+        showToast("Error", error.message, "error");
       }
     }
   },[])

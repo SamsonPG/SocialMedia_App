@@ -2,18 +2,31 @@ import User from "../models/userModel.js";
 import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
 import generateTokenandSetCookie from "../utils/helpers/generateTokenandSetCookie.js";
-import {v2 as cloudinary} from "cloudinary"
+import { v2 as cloudinary } from "cloudinary";
 
 //getUserProfile
 
 const getUserProfile = async (req, res) => {
-  const { username } = req.params;
+  //We will fetch user profile either with username or userId
+  //query is either username or userId
+  const { query } = req.params;
   try {
- 
-    const user = await User.findOne({ username })
+  let user;
+  //query is userId
+  if(mongoose.Types.ObjectId.isValid(query)){
+       user = await User.findOne({ _id:query })
       .select("-password")
       .select("-updatedAt");
-    if (!user) return res.status(400).json({ error: "User not found" });
+
+  }else{
+    //query is username
+    user = await User.findOne({ username: query })
+     .select("-password")
+     .select("-updatedAt");
+  }
+
+ 
+    if (!user) return res.status(404).json({ error: "User not found" });
 
     res.status(200).json(user);
   } catch (error) {
@@ -28,10 +41,10 @@ const signupUser = async (req, res) => {
   try {
     const { name, email, username, password } = req.body;
 
-       // Validate the request body
-       if (!name || !email || !username || !password) {
-        return res.status(400).json({ error: 'All fields are required' });
-      }
+    // Validate the request body
+    if (!name || !email || !username || !password) {
+      return res.status(400).json({ error: "All fields are required" });
+    }
 
     // Check if the user already exists
     const user = await User.findOne({ $or: [{ email }, { username }] });
@@ -64,7 +77,6 @@ const signupUser = async (req, res) => {
         username: newUser.username,
         bio: newUser.bio,
         profilePic: newUser.profilePic,
-      
       });
     } else {
       res.status(400).json({ error: "Invalid user data" });
@@ -100,7 +112,6 @@ const loginUser = async (req, res) => {
       username: user.username,
       bio: user.bio,
       profilePic: user.profilePic,
-     
     });
   } catch (error) {
     res.status(500).json({ error: error.message });
@@ -165,7 +176,7 @@ const followUnfollowUser = async (req, res) => {
 
 const updateUser = async (req, res) => {
   const { name, email, username, password, bio } = req.body;
-  let {profilePic} = req.body;
+  let { profilePic } = req.body;
 
   const userId = req.user._id;
   try {
@@ -192,19 +203,18 @@ const updateUser = async (req, res) => {
       // Check if the user already has a profile picture
       if (user.profilePic) {
         // Extract the public ID from the URL and destroy the old picture
-        const publicId = user.profilePic.split('/').pop().split('.')[0];
+        const publicId = user.profilePic.split("/").pop().split(".")[0];
         await cloudinary.uploader.destroy(publicId);
       }
-    
+
       // Upload the new profile picture
       const uploadedResponse = await cloudinary.uploader.upload(profilePic, {
-        upload_preset: 'social_app',
+        upload_preset: "social_app",
       });
-    
+
       // Update the profilePic variable with the URL of the uploaded image
       profilePic = uploadedResponse.secure_url;
     }
-    
 
     user.name = name || user.name;
     user.email = email || user.email;
@@ -215,7 +225,7 @@ const updateUser = async (req, res) => {
     user = await user.save();
 
     //password should be null in response
-    user.password = null
+    user.password = null;
 
     res.status(200).json(user);
   } catch (error) {

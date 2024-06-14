@@ -1,4 +1,19 @@
-import { Box, Flex, Text } from "@chakra-ui/react";
+import {
+  Box,
+  Button,
+  Flex,
+  FormControl,
+  Modal,
+  ModalBody,
+  ModalCloseButton,
+  ModalContent,
+  ModalFooter,
+  ModalHeader,
+  ModalOverlay,
+  Text,
+  Textarea,
+  useDisclosure,
+} from "@chakra-ui/react";
 import { useState } from "react";
 import useShowToast from "../hooks/useShowToast";
 import { useRecoilValue } from "recoil";
@@ -7,9 +22,13 @@ import userAtom from "../atoms/userAtom";
 const Actions = ({ post: post_ }) => {
   const user = useRecoilValue(userAtom);
   const [liked, setLiked] = useState(post_.likes.includes(user?._id));
-  const showToast = useShowToast();
   const [post, setPost] = useState(post_);
-  const [isLiking,setIsLiking]=useState(false)
+  const [isLiking, setIsLiking] = useState(false);
+  const [isReplaying, setIsReplaying] = useState(false);
+
+  const [replay, setReplay] = useState("");
+  const showToast = useShowToast();
+  const { isOpen, onOpen, onClose } = useDisclosure();
 
   const handleLikeAndUnlike = async () => {
     if (!user)
@@ -18,8 +37,8 @@ const Actions = ({ post: post_ }) => {
         "You must be logged in to like a post",
         "error"
       );
-      if(isLiking) return
-      setIsLiking(true)
+    if (isLiking) return;
+    setIsLiking(true);
     try {
       const res = await fetch("/api/posts/like/" + post._id, {
         method: "PUT",
@@ -40,8 +59,41 @@ const Actions = ({ post: post_ }) => {
       setLiked(!liked);
     } catch (error) {
       showToast("Error", error.message, "error");
-    }finally{
-      setIsLiking(false)
+    } finally {
+      setIsLiking(false);
+    }
+  };
+
+  const handleReplay = async () => {
+    if (!user)
+      return showToast(
+        "Error",
+        "You must be logged in to replay a post",
+        "error"
+      );
+    if (isReplaying) return;
+    setIsReplaying(true);
+    try {
+      const res = await fetch("/api/posts/replay/" + post._id, {
+        method: "PUT",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({
+          text: replay,
+        }),
+      });
+      const data = await res.json();
+      if (data.error) return showToast("Error", data.error, "error");
+      setPost({ ...post, replies: [...post.replies, data.replay] });
+      showToast("Success", "Replay posted successfully", "success");
+      console.log(data);
+      onClose();
+      setReplay("")
+    } catch (error) {
+      showToast("Error", error.message, "error");
+    } finally {
+      setIsReplaying(false);
     }
   };
 
@@ -76,55 +128,96 @@ const Actions = ({ post: post_ }) => {
           strokeWidth="2"
           strokeLinecap="round"
           strokeLinejoin="round"
+          onClick={onOpen}
         >
           <path d="M12 21C16.9706 21 21 16.9706 21 12C21 7.02944 16.9706 3 12 3C7.02944 3 3 7.02944 3 12C3 13.4876 3.36093 14.891 4 16.1272L3 21L7.8728 20C9.10904 20.6391 10.5124 21 12 21Z"></path>
         </svg>
 
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <title>Repost</title>
-          <polyline points="17 1 21 5 17 9" />
-          <path d="M3 11V9a4 4 0 0 1 4-4h14" />
-          <polyline points="7 23 3 19 7 15" />
-          <path d="M21 13v2a4 4 0 0 1-4 4H3" />
-        </svg>
-
-        <svg
-          xmlns="http://www.w3.org/2000/svg"
-          width="24"
-          height="24"
-          viewBox="0 0 24 24"
-          fill="none"
-          stroke="currentColor"
-          strokeWidth="2"
-          strokeLinecap="round"
-          strokeLinejoin="round"
-        >
-          <title>Send</title>
-          <line x1="22" y1="2" x2="11" y2="13" />
-          <polygon points="22 2 15 22 11 13 2 9 22 2" />
-        </svg>
+        <RepostSVG />
+        <ShareSVG />
       </Flex>
       <Flex gap={2} alignItems={"center"}>
         <Text color={"gray.light"} fontSize="sm">
-          {post.likes.length} likes
+          {post_.likes.length} likes
         </Text>
         <Box w={0.5} h={0.5} borderRadius={"full"} bg={"gray.light"}></Box>
         <Text color={"gray.light"} fontSize="sm">
-          {post.replies.length} replies
+          {post_.replies.length} replies
         </Text>
       </Flex>
+
+      <Modal isOpen={isOpen} onClose={onClose}>
+        <ModalOverlay />
+        <ModalContent>
+          <ModalHeader></ModalHeader>
+          <ModalCloseButton />
+          <ModalBody pb={6}>
+            <FormControl>
+              <Textarea
+                placeholder="Replay goes here"
+                value={replay}
+                onChange={(e) => setReplay(e.target.value)}
+              />
+            </FormControl>
+          </ModalBody>
+
+          <ModalFooter>
+            <Button
+              colorScheme="blue"
+              size={"sm"}
+              mr={3}
+              isLoading={isReplaying}
+              onClick={handleReplay}
+            >
+              Replay
+            </Button>
+          </ModalFooter>
+        </ModalContent>
+      </Modal>
     </Flex>
   );
 };
 
 export default Actions;
+
+const RepostSVG = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <title>Repost</title>
+      <polyline points="17 1 21 5 17 9" />
+      <path d="M3 11V9a4 4 0 0 1 4-4h14" />
+      <polyline points="7 23 3 19 7 15" />
+      <path d="M21 13v2a4 4 0 0 1-4 4H3" />
+    </svg>
+  );
+};
+
+const ShareSVG = () => {
+  return (
+    <svg
+      xmlns="http://www.w3.org/2000/svg"
+      width="24"
+      height="24"
+      viewBox="0 0 24 24"
+      fill="none"
+      stroke="currentColor"
+      strokeWidth="2"
+      strokeLinecap="round"
+      strokeLinejoin="round"
+    >
+      <title>Send</title>
+      <line x1="22" y1="2" x2="11" y2="13" />
+      <polygon points="22 2 15 22 11 13 2 9 22 2" />
+    </svg>
+  );
+};

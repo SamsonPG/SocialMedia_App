@@ -20,7 +20,7 @@ const [loading,setLoading] = useState(true)
           showToast("Error", data.error, "error");
           return;
         }
-        console.log(data);
+       
         setPosts(data)
       } catch (error) {
         showToast("Error", error.message, "error")

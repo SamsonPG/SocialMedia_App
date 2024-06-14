@@ -7,7 +7,7 @@ import useShowToast from "../hooks/useShowToast";
 import { formatDistanceToNow } from "date-fns";
 
 const Post = ({ post, postedBy }) => {
-  const [liked, setLiked] = useState(false);
+
   const showToast = useShowToast();
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
@@ -16,7 +16,7 @@ const Post = ({ post, postedBy }) => {
       try {
         const res = await fetch(`/api/users/profile/${postedBy}`);
         const data = await res.json();
-        console.log(data);
+     
         if (data.error) {
           showToast("Error", data.error, "error");
           return;
@@ -99,7 +99,7 @@ const Post = ({ post, postedBy }) => {
               <Image src="/verified.png" w={4} h={4} ml={1} />
             </Flex>
             <Flex gap={"4"} alignItems={"center"}>
-              <Text fontSize={"xs"} width={36}  textAlign={"right"}color={"gray.light"}>
+              <Text fontSize={"xs"} width={36}  textAlign={"right"} color={"gray.light"}>
                 {formatDistanceToNow(new Date(post.createdAt))} ago
               </Text>
             </Flex>
@@ -117,17 +117,9 @@ const Post = ({ post, postedBy }) => {
           )}
 
           <Flex gap={3} my={1}>
-            <Actions liked={liked} setLiked={setLiked} />
+            <Actions post={post} />
           </Flex>
-          <Flex gap={2} alignItems={"center"}>
-            <Text color={"gray.light"} fontSize="sm">
-              {post.likes.length} likes
-            </Text>
-            <Box w={0.5} h={0.5} borderRadius={"full"} bg={"gray.light"}></Box>
-            <Text color={"gray.light"} fontSize="sm">
-              {post.replies.length} replies
-            </Text>
-          </Flex>
+
         </Flex>
       </Flex>
     </Link>

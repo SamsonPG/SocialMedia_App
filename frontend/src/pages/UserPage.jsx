@@ -3,6 +3,7 @@ import UserHeader from "../components/UserHeader";
 import { useParams } from "react-router-dom";
 import useShowToast from "../hooks/useShowToast";
 import { Spinner, Flex } from "@chakra-ui/react";
+import Post from "../components/Post";
 
 const UserPage = () => {
   const [user, setUser] = useState(null);
@@ -17,7 +18,6 @@ const UserPage = () => {
       try {
         const res = await fetch(`/api/users/profile/${username}`);
         const data = await res.json();
-        console.log(data, username);
         if (data.error) {
           showToast("Error", data.error, "error");
         }
@@ -32,7 +32,7 @@ const UserPage = () => {
     const getPosts = async () => {
       setFetchingPosts(true)
       try {
-        const res = await fetch("/api/posts/user/${username}");
+        const res = await fetch(`/api/posts/user/${username}`);
         const data = await res.json();
         if (data.error) {
           showToast("Error", data.error, "error");
@@ -69,6 +69,9 @@ const UserPage = () => {
           <Spinner size={"xl"}/>
           </Flex>
     )}
+    {posts.map((post)=>(
+      <Post key={post._id} post={post} postedBy={post.postedBy}/>
+    ))}
     </>
   );
 };

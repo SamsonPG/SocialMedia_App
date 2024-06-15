@@ -23,7 +23,7 @@ import { useState } from "react";
 import useShowToast from "../hooks/useShowToast";
 
 const UserHeader = ({ user }) => {
-  console.log(user);
+
   const toast = useToast();
   const showToast = useShowToast();
   const currentUser = useRecoilValue(userAtom); //logged in user

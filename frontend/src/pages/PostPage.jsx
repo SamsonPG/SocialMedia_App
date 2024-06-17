@@ -14,7 +14,7 @@ import { useState, useEffect } from "react";
 import Comment from "../components/Comment";
 import useGetUserProfile from "../hooks/useGetUserProfile";
 import useShowToast from "../hooks/useShowToast";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams } from "react-router-dom";
 import { formatDistanceToNow } from "date-fns";
 import { DeleteIcon } from "@chakra-ui/icons";
 import userAtom from "../atoms/userAtom";
@@ -24,8 +24,9 @@ const PostPage = () => {
   const { user, loading } = useGetUserProfile();
   const [post, setPost] = useState(null);
   const showToast = useShowToast();
-  const {pid} = useParams()
-const currentUser = useRecoilValue(userAtom)
+  const { pid } = useParams();
+  const currentUser = useRecoilValue(userAtom);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const getPost = async () => {
@@ -34,20 +35,33 @@ const currentUser = useRecoilValue(userAtom)
         const data = await res.json();
         if (data.error) {
           showToast("Error", data.error, "error");
-          return
-        } 
-          setPost(data);
-        
+          return;
+        }
+        setPost(data);
       } catch (error) {
         showToast("Error", error.message, "error");
       }
     };
     getPost();
-  }, [showToast,pid]);
+  }, [showToast, pid]);
 
-  const haldleDeletePost =async(e)=>{
-
-  }
+  const haldleDeletePost = async () => {
+    try {
+      if (!window.confirm("Are you sure you want to delete this post?")) return;
+      const res = await fetch(`/api/posts/delete/${post._id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.error) {
+        showToast("Error", data.error, "error");
+        return;
+      }
+      showToast("Success", "Post deleted", "success");
+      navigate(`/${user.username}`);
+    } catch (error) {
+      showToast("Error", error.message, "error");
+    }
+  };
 
   if (!user && loading) {
     return (
@@ -56,7 +70,7 @@ const currentUser = useRecoilValue(userAtom)
       </Flex>
     );
   }
-  if(!post) return null
+  if (!post) return null;
 
   return (
     <>
@@ -71,30 +85,38 @@ const currentUser = useRecoilValue(userAtom)
           </Flex>
         </Flex>
         <Flex gap={"4"} alignItems={"center"}>
-              <Text fontSize={"xs"} width={36}  textAlign={"right"} color={"gray.light"}>
-                {formatDistanceToNow(new Date(post.createdAt))} ago
-              </Text>
-        {currentUser?._id === user._id && (
-                <DeleteIcon size={20}
-                onClick={haldleDeletePost}/>
-        )}
-            </Flex>
+          <Text
+            fontSize={"xs"}
+            width={36}
+            textAlign={"right"}
+            color={"gray.light"}
+          >
+            {formatDistanceToNow(new Date(post.createdAt))} ago
+          </Text>
+          {currentUser?._id === user._id && (
+            <DeleteIcon
+              size={20}
+              cursor={"pointer"}
+              onClick={haldleDeletePost}
+            />
+          )}
+        </Flex>
       </Flex>
       <Text my="3">{post.text}</Text>
-{post.img && (
+      {post.img && (
         <Box
-        borderRadius={6}
-        overflow={"hidden"}
-        border={"1px solid "}
-        borderColor={"gray.light"}
-      >
-        <Image src={post.img} w={"full"} />
-      </Box>
-)}
+          borderRadius={6}
+          overflow={"hidden"}
+          border={"1px solid "}
+          borderColor={"gray.light"}
+        >
+          <Image src={post.img} w={"full"} />
+        </Box>
+      )}
       <Flex gap={3} my={3}>
         <Actions post={post} />
       </Flex>
-     
+
       <Divider my={4} />
       <Flex justifyContent={"space-between"}>
         <Flex gap={2} alignItems={"center"}>

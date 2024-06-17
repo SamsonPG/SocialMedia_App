@@ -3,12 +3,15 @@ import { Link, useNavigate } from "react-router-dom";
 import Actions from "./Actions";
 import { useEffect, useState } from "react";
 import useShowToast from "../hooks/useShowToast";
-
+import {DeleteIcon} from "@chakra-ui/icons"
 import { formatDistanceToNow } from "date-fns";
+import userAtom from "../atoms/userAtom";
+import { useRecoilValue } from "recoil";
 
 const Post = ({ post, postedBy }) => {
 
   const showToast = useShowToast();
+  const currentUser = useRecoilValue(userAtom)
   const [user, setUser] = useState(null);
   const navigate = useNavigate();
   useEffect(() => {
@@ -29,6 +32,24 @@ const Post = ({ post, postedBy }) => {
     };
     getUser();
   }, [postedBy, showToast]);
+
+  const haldleDeletePost = async(e)=>{
+    try {
+      e.preventDefault()
+      if(!window.confirm('Are you sure you want to delete this post?') )return
+      const res = await fetch(`/api/posts/delete/${post._id}`, {
+        method: "DELETE",
+      });
+      const data = await res.json();
+      if (data.error) {
+        showToast("Error", data.error, "error");
+        return;
+      }
+      showToast("Success", "Post deleted", "success");
+    } catch (error) {
+      showToast("Error", error.message, "error");
+    }
+  }
 
   if (!user) return null;
 
@@ -65,8 +86,8 @@ const Post = ({ post, postedBy }) => {
                 name="John Dom"
                 src={post.replies[1].userProfilePic}
                 position={"absolute"}
-                top={"0px"}
-                left={"15px"}
+                bottom={"0px"}
+                right={"-5px"}
                 padding={"2px"}
               ></Avatar>
             )}
@@ -76,8 +97,8 @@ const Post = ({ post, postedBy }) => {
                 name="John Dom"
                 src={post.replies[2].userProfilePic}
                 position={"absolute"}
-                top={"0px"}
-                left={"15px"}
+                bottom={"0px"}
+                left={"4px"}
                 padding={"2px"}
               ></Avatar>
             )}
@@ -102,6 +123,10 @@ const Post = ({ post, postedBy }) => {
               <Text fontSize={"xs"} width={36}  textAlign={"right"} color={"gray.light"}>
                 {formatDistanceToNow(new Date(post.createdAt))} ago
               </Text>
+        {currentUser?._id === user._id && (
+                <DeleteIcon size={20}
+                onClick={haldleDeletePost}/>
+        )}
             </Flex>
           </Flex>
           <Text fontSize={"sm"}>{post.text}</Text>

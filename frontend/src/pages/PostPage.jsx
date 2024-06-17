@@ -9,11 +9,12 @@ import {
 } from "@chakra-ui/react";
 import { BsThreeDots } from "react-icons/bs";
 import Actions from "../components/Actions";
-import { useState } from "react";
+import { useState,useEffect } from "react";
 import Comment from "../components/Comment";
 
 const PostPage = () => {
-  const [liked, setLiked] = useState();
+
+
   return (
     <>
       <Flex>
@@ -43,7 +44,7 @@ const PostPage = () => {
         <Image src={"/post1.png"} w={"full"} />
       </Box>
       <Flex gap={3} my={3}>
-        <Actions liked={liked} setLiked={setLiked} />
+        <Actions post={post} />
       </Flex>
       <Flex gap={2} alignItems={"center"}>
         <Text color={"gray.light"} fontSize={"sm"}>
@@ -51,7 +52,7 @@ const PostPage = () => {
         </Text>
         <Box w={0.5} h={0.5} borderRadius={"full"} bg={"gray.light"}></Box>
         <Text color={"gray.light"} fontSize={"sm"}>
-          {237 + (liked ? 1 : 0)} likes
+          {237 } likes
         </Text>
       </Flex>
       <Divider my={4} />
@@ -65,20 +66,14 @@ const PostPage = () => {
         <Button>Get</Button>
       </Flex>
       <Divider my={4} />
-      <Comment
+      {/* <Comment
         comment="looks really good 🎪"
         createdAt="2d"
         likes={200}
         username="jondoe"
         userAvatar="https://bit.ly/dan-abramov"
-      />
-      <Comment
-        comment="looks really good 🎪"
-        createdAt="2d"
-        likes={200}
-        username="jondoe"
-        userAvatar="https://bit.ly/dan-abramov"
-      />
+      /> */}
+
     </>
   );
 };

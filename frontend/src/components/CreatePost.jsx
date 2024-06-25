@@ -1,120 +1,3 @@
-// import { AddIcon } from "@chakra-ui/icons";
-// import {
-//   Button,
-//   CloseButton,
-//   Flex,
-//   FormControl,
-//   Image,
-//   Input,
-//   Modal,
-//   ModalBody,
-//   ModalCloseButton,
-//   ModalContent,
-//   ModalFooter,
-//   ModalHeader,
-//   ModalOverlay,
-//   Text,
-//   Textarea,
-//   useColorModeValue,
-//   useDisclosure,
-// } from "@chakra-ui/react";
-// import { useRef, useState } from "react";
-// import usePreviewImage from "../hooks/usePreviewImage";
-// import { BsFillImageFill } from "react-icons/bs";
-
-// const CreatePost = () => {
-//   const { isOpen, onOpen, onClose } = useDisclosure();
-//   const [postText, setPostText] = useState("");
-//   const { handleImageChange, imgUrl, setImgUrl } = usePreviewImage();
-
-//   const imageRef = useRef(null);
-//   const MAX_CHAR = 500;
-//   const [remainingChar, setRemainingChar] = useState(MAX_CHAR);
-//   const handleTextChange = (e) => {
-//     const inputText = e.target.value;
-//     if (inputText > MAX_CHAR) {
-//       const truncatedText = inputText.slice(0, MAX_CHAR);
-//       setPostText(truncatedText);
-//       setRemainingChar(MAX_CHAR - inputText.length);
-//     }
-//   };
-
-//   const handleCreatePost = async () => {};
-
-//   return (
-//     <>
-//       <Button
-//         position={"fixed"}
-//         bottom={10}
-//         right={10}
-//         leftIcon={<AddIcon />}
-//         bg={useColorModeValue("gray.300", "gray.dark")}
-//         onClick={onOpen}
-//       >
-//         Post
-//       </Button>
-
-//       <Modal isOpen={isOpen} onClose={onClose}>
-//         <ModalOverlay />
-//         <ModalContent>
-//           <ModalHeader>Create Post</ModalHeader>
-//           <ModalCloseButton />
-//           <ModalBody pb={6}>
-//             <FormControl>
-//               <Textarea
-//                 placeholder="Post content goes here.."
-//                 onChange={handleTextChange}
-//                 value={postText}
-//               />
-//               <Text
-//                 fontsize={"xm"}
-//                 fontWeight={"bold"}
-//                 textAlign={"right"}
-//                 m={"1"}
-//                 color={"gray.800"}
-//               >
-//                 {remainingChar}/{MAX_CHAR}
-//               </Text>
-//               <Input
-//                 type="file"
-//                 hidden
-//                 ref={imageRef}
-//                 onChange={handleImageChange}
-//               />
-//               <BsFillImageFill
-//                 style={{ marginLeft: "5px", cursor: "pointer" }}
-//                 size={16}
-//                 onClick={() => imageRef.current.click()}
-//               />
-//             </FormControl>
-//             {imgUrl && (
-//               <Flex mt={5} w={"full"} position={"relative"}>
-//                 <Image src={imgUrl} alt="Selected img" />
-//                 <CloseButton
-//                   onClick={() => {
-//                     setImgUrl("");
-//                   }}
-//                   bg={"gray.800"}
-//                   position={"absolute"}
-//                   top={2}
-//                   right={2}
-//                 />
-//               </Flex>
-//             )}
-//           </ModalBody>
-
-//           <ModalFooter>
-//             <Button colorScheme="blue" mr={3} onClick={handleCreatePost}>
-//               Post
-//             </Button>
-//           </ModalFooter>
-//         </ModalContent>
-//       </Modal>
-//     </>
-//   );
-// };
-
-// export default CreatePost;
 import { AddIcon } from "@chakra-ui/icons";
 import {
   Button,
@@ -139,8 +22,9 @@ import { useRef, useState } from "react";
 import usePreviewImage from "../hooks/usePreviewImage";
 import { BsFillImageFill } from "react-icons/bs";
 import userAtom from "../atoms/userAtom";
-import { useRecoilValue } from "recoil";
+import { useRecoilState, useRecoilValue } from "recoil";
 import useShowToast from "../hooks/useShowToast";
+import postsAtom from "../atoms/postsAtom";
 
 const CreatePost = () => {
   const showToast = useShowToast();
@@ -151,7 +35,8 @@ const CreatePost = () => {
   const imageRef = useRef(null);
   const MAX_CHAR = 500;
   const [remainingChar, setRemainingChar] = useState(MAX_CHAR);
-const[loading,setLoading]= useState(false)
+  const [loading, setLoading] = useState(false);
+  const [posts,setPosts] = useRecoilState(postsAtom)
 
   const handleTextChange = (e) => {
     const inputText = e.target.value;
@@ -166,7 +51,7 @@ const[loading,setLoading]= useState(false)
   };
 
   const handleCreatePost = async () => {
-    setLoading(true)
+    setLoading(true);
     // Ensure that either postText or imgUrl is provided
     if (!postText && !imgUrl) {
       showToast("Error", "Post must have either text or an image", "error");
@@ -197,15 +82,15 @@ const[loading,setLoading]= useState(false)
       }
 
       showToast("Success", "Post created successfully", "success");
+      setPosts([data,...posts])
       onClose();
       // Clear the inputs after creating a post
       setPostText("");
       setImgUrl("");
     } catch (error) {
-     
       showToast("Error", error, "error");
-    }finally{
-        setLoading(false)
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -214,12 +99,12 @@ const[loading,setLoading]= useState(false)
       <Button
         position={"fixed"}
         bottom={10}
-        right={10}
-        leftIcon={<AddIcon />}
+        right={5}
         bg={useColorModeValue("gray.300", "gray.dark")}
         onClick={onOpen}
+        size={{ base: "sm", sm: "md" }}
       >
-        Post
+        <AddIcon />
       </Button>
 
       <Modal isOpen={isOpen} onClose={onClose}>
@@ -272,7 +157,12 @@ const[loading,setLoading]= useState(false)
           </ModalBody>
 
           <ModalFooter>
-            <Button colorScheme="blue" mr={3} onClick={handleCreatePost} isLoading={loading}>
+            <Button
+              colorScheme="blue"
+              mr={3}
+              onClick={handleCreatePost}
+              isLoading={loading}
+            >
               Post
             </Button>
           </ModalFooter>

@@ -3,6 +3,7 @@ import bcrypt from "bcryptjs";
 import mongoose from "mongoose";
 import generateTokenandSetCookie from "../utils/helpers/generateTokenandSetCookie.js";
 import { v2 as cloudinary } from "cloudinary";
+import Post from "../models/postModel.js"
 
 //getUserProfile
 
@@ -11,21 +12,19 @@ const getUserProfile = async (req, res) => {
   //query is either username or userId
   const { query } = req.params;
   try {
-  let user;
-  //query is userId
-  if(mongoose.Types.ObjectId.isValid(query)){
-       user = await User.findOne({ _id:query })
-      .select("-password")
-      .select("-updatedAt");
+    let user;
+    //query is userId
+    if (mongoose.Types.ObjectId.isValid(query)) {
+      user = await User.findOne({ _id: query })
+        .select("-password")
+        .select("-updatedAt");
+    } else {
+      //query is username
+      user = await User.findOne({ username: query })
+        .select("-password")
+        .select("-updatedAt");
+    }
 
-  }else{
-    //query is username
-    user = await User.findOne({ username: query })
-     .select("-password")
-     .select("-updatedAt");
-  }
-
- 
     if (!user) return res.status(404).json({ error: "User not found" });
 
     res.status(200).json(user);
@@ -223,6 +222,19 @@ const updateUser = async (req, res) => {
     user.bio = bio || user.bio;
 
     user = await user.save();
+
+    //find all posts that this user replied and update username and userprofilepic fields
+    await Post.updateMany(
+      { "replies.userId": userId },
+      {
+        $set: {
+          "replies.$[replay].username": user.username,
+          "replies.$[replay].userProfilePic": user.profilePic,
+        },
+      },{
+        arrayFilters:[{"replay.userId":userId}]
+      }
+    );
 
     //password should be null in response
     user.password = null;

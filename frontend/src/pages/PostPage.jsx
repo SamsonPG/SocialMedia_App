@@ -128,13 +128,14 @@ const PostPage = () => {
         <Button>Get</Button>
       </Flex>
       <Divider my={4} />
-      {/* <Comment
-        comment="looks really good 🎪"
-        createdAt="2d"
-        likes={200}
-        username="jondoe"
-        userAvatar="https://bit.ly/dan-abramov"
-      /> */}
+      {post.replies.map(replay=>(
+               <Comment
+               key={replay._id}
+               replay={replay}
+               lastReplay={replay._id === post.replies[post.replies.length - 1]._id}
+             /> 
+      ))}
+
     </>
   );
 };

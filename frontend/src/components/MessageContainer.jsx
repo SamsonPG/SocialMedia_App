@@ -9,6 +9,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import Message from "./Message";
+import { MessageInput } from "./MessageInput";
 
 const MessageContainer = () => {
   return (
@@ -33,7 +34,8 @@ const MessageContainer = () => {
         gap={4}
         my={4}
         height={"400px"}
-        overflowY={"scroll"}
+        p={2}
+        overflowY={"auto"}
       >
         {false &&
           [...Array(5)].map((_, i) => (
@@ -58,7 +60,12 @@ const MessageContainer = () => {
         <Message ownMessage={false} />
         <Message ownMessage={true} />
         <Message ownMessage={true} />
+        <Message ownMessage={true} />
+        <Message ownMessage={false} />
+        <Message ownMessage={true} />
+        <Message ownMessage={true} />
       </Flex>
+      <MessageInput/>
     </Flex>
   );
 };

@@ -10,7 +10,7 @@ import {
   useColorModeValue,
 } from "@chakra-ui/react";
 import Conversation from "../components/Conversation";
-import { GiConversation } from "react-icons/gi";
+// import { GiConversation } from "react-icons/gi";
 import  MessageContainer from "../components/MessageContainer";
 
 const ChatPage = () => {

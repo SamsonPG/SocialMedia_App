@@ -11,6 +11,7 @@ import {
 } from "@chakra-ui/react";
 import Conversation from "../components/Conversation";
 import { GiConversation } from "react-icons/gi";
+import  MessageContainer from "../components/MessageContainer";
 
 const ChatPage = () => {
   return (
@@ -79,7 +80,7 @@ const ChatPage = () => {
           <Conversation />
           <Conversation />
         </Flex>
-        <Flex
+        {/* <Flex
           flex={70}
           borderRadius={"md"}
           p={2}
@@ -90,8 +91,8 @@ const ChatPage = () => {
         >
           <GiConversation size={100} />
           <Text fontSize={20}>Select a conversation to start messaging</Text>
-        </Flex>
-        {/* <Flex flex={70}>message container</Flex> */}
+        </Flex> */}
+   <MessageContainer/ >
       </Flex>
     </Box>
   );

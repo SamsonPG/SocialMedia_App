@@ -8,6 +8,7 @@ import {
   Text,
   useColorModeValue,
 } from "@chakra-ui/react";
+import Message from "./Message";
 
 const MessageContainer = () => {
   return (
@@ -53,6 +54,10 @@ const MessageContainer = () => {
               {i % 2 !== 0 && <SkeletonCircle size={7} />}
             </Flex>
           ))}
+        <Message ownMessage={true} />
+        <Message ownMessage={false} />
+        <Message ownMessage={true} />
+        <Message ownMessage={true} />
       </Flex>
     </Flex>
   );

@@ -59,4 +59,15 @@ async function getMessages(req,res){
     }
 }
 
-export{sendMessage,getMessages}
+async function getConversations(req,res){
+try {
+    
+} catch (error) {
+    res.status(500).json({error : error.message});
+    
+}
+
+}
+
+
+export{sendMessage,getMessages,getConversations}

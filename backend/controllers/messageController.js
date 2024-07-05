@@ -35,8 +35,28 @@ try {
     res.status(201).json(newMessage);
  
 } catch (error) {
-    res.status(500).json({message : error.message});
+    res.status(500).json({error : error.message});
 }
 }
 
-export{sendMessage}
+async function getMessages(req,res){
+    const {otherUserId} = req.params;
+    const userId = req.user._id;
+    try {
+        const conversation = await Conversation.findOne({
+            participants:{$all:[userId, otherUserId]}
+        })
+        
+        if(!conversation) return res.status(404).json({error: "Conversation not found"});
+        
+        const messages = await Message.find({conversationId: conversation._id}).sort({createdAt: 1});
+        
+        res.status(200).json(messages);
+        
+    } catch (error) {
+    res.status(500).json({error : error.message});
+        
+    }
+}
+
+export{sendMessage,getMessages}

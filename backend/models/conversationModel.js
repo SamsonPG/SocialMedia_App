@@ -6,7 +6,7 @@ const conversationSchema= new mongoose.Schema({
         ref: 'User'
     }],
     lastMessage:{
-        type: String,
+        text: { type: String },
         sender:{type: mongoose.Schema.Types.ObjectId, ref:'User'}
     },
  

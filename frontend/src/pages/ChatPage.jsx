@@ -11,16 +11,18 @@ import {
 } from "@chakra-ui/react";
 import Conversation from "../components/Conversation";
 import useShowToast from "../hooks/useShowToast"
-// import { GiConversation } from "react-icons/gi";
+import { GiConversation } from "react-icons/gi";
 import  MessageContainer from "../components/MessageContainer";
 import { useEffect, useState } from "react";
-import { conversationsAtom } from "../atoms/messagesAtoms";
+import { conversationsAtom,selectedConversationAtom } from "../atoms/messagesAtoms";
 import { useRecoilState } from "recoil";
+
 
 const ChatPage = () => {
 const showToast = useShowToast()
 const [loadingConversations, setLoadingConversations] = useState(true)
 const[conversations,setConversations] = useRecoilState(conversationsAtom)
+const[selectedConversation,setSelectedConversation]= useRecoilState(selectedConversationAtom)
   useEffect(()=>{
     const getConversations= async()=>{
       try {
@@ -31,7 +33,7 @@ const[conversations,setConversations] = useRecoilState(conversationsAtom)
           return
         }
         
-     console.log(data);
+    //  console.log(data);
       setConversations(data)  
       } catch (error) {
         showToast("Error", error.message,"error")
@@ -112,19 +114,22 @@ const[conversations,setConversations] = useRecoilState(conversationsAtom)
      )    }
      
         </Flex>
-        {/* <Flex
-          flex={70}
-          borderRadius={"md"}
-          p={2}
-          flexDirection={"column"}
-          alignItems={"center"}
-          justifyContent={"center"}
-          height={"400px"}
-        >
-          <GiConversation size={100} />
-          <Text fontSize={20}>Select a conversation to start messaging</Text>
-        </Flex> */}
-   <MessageContainer/ >
+        {!selectedConversation._id &&(
+        <Flex
+        flex={70}
+        borderRadius={"md"}
+        p={2}
+        flexDirection={"column"}
+        alignItems={"center"}
+        justifyContent={"center"}
+        height={"400px"}
+      >
+        <GiConversation size={100} />
+        <Text fontSize={20}>Select a conversation to start messaging</Text>
+      </Flex>
+        )}
+{selectedConversation._id &&    <MessageContainer/ >}
+
       </Flex>
     </Box>
   );

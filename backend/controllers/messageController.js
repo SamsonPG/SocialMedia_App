@@ -1,5 +1,7 @@
 import Conversation from "../models/conversationModel.js";
 import Message from "../models/messageModel.js";
+
+
 async function sendMessage(req, res) {
   try {
     const { recipientId, message } = req.body;
@@ -61,9 +63,10 @@ async function getMessages(req, res) {
 
 async function getConversations(req, res) {
   const userId = req.user._id;
+ 
   try {
     const conversations = await Conversation.find({
-      participants: userId,
+      participants:  userId,
     }).populate({ path: "participants", select: "username profilePic" });
 
     res.status(200).json(conversations);

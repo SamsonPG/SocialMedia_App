@@ -10,8 +10,19 @@ import {
 } from "@chakra-ui/react";
 import Message from "./Message";
 import { MessageInput } from "./MessageInput";
+import useShowToast from "../hooks/useShowToast"
 
 const MessageContainer = () => {
+  const showToast = useShowToast()
+  useEffect(()=>{
+    const getMessages = async()=>{
+      try {
+        
+      } catch (error) {
+        
+      }
+    }
+  },[])
   return (
     <Flex
       flex="70"

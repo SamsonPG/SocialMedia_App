@@ -82,7 +82,7 @@ import { selectedConversationAtom } from "../atoms/messagesAtoms";
 //     </Flex>
 //   );
 // };
-const Conversation = ({ conversation }) => {
+const Conversation = ({ conversation , isOnline}) => {
 
   const currentUser = useRecoilValue(userAtom);
   const [selectedConversation, setSelectedConversation] = useRecoilState(
@@ -135,7 +135,7 @@ const Conversation = ({ conversation }) => {
           }}
           src={user.profilePic}
         >
-          <AvatarBadge boxSize="1em" bg="green.500" />
+          {isOnline? <AvatarBadge boxSize="1em" bg="green.500" />:  ""}
         </Avatar>
       </WrapItem>
       <Stack direction={"column"} fontSize={"sm"}>
